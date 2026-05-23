@@ -1,0 +1,71 @@
+# Claude / AI tools
+docs/superpowers/
+.claude/
+*.claude
+.superpowers/
+
+# Data (versioned by DVC)
+data/raw/
+data/processed/
+*.csv
+*.parquet
+*.feather
+
+# DVC cache
+.dvc/cache
+.dvc/tmp
+
+# MLflow
+mlruns/
+mlartifacts/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+*.whl
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Models (tracked via MLflow or DVC)
+models/
+*.pkl
+*.joblib
+*.h5
+*.onnx
+
+# Logs
+logs/
+*.log
+
+# Docker
+.dockerignore
+
+# Env files
+.env
+.env.*
