@@ -69,3 +69,4 @@ logs/
 # Env files
 .env
 .env.*
+description_projet.pdf
