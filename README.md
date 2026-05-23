@@ -1,10 +1,7 @@
 # Restaurant Revenue Prediction — MLOps Project
 
-Projet MLOps de prédiction des ventes annuelles de restaurants pour TFI (Burger King, Sbarro, Popeyes, Arby's).
-
-## Objectif
-
-Prédire les ventes annuelles de nouveaux restaurants à partir de données démographiques, immobilières et commerciales (dataset Kaggle).
+Prédiction des ventes annuelles de restaurants pour TFI (Burger King, Sbarro, Popeyes, Arby's)
+à partir de données démographiques, immobilières et commerciales.
 
 ## Stack technique
 
@@ -20,7 +17,7 @@ Prédire les ventes annuelles de nouveaux restaurants à partir de données dém
 
 ```
 ├── notebooks/          # EDA et modélisation
-├── data/               # Données (gérées par DVC)
+├── data/               # Données (gérées par DVC, non commitées)
 │   ├── raw/
 │   └── processed/
 ├── src/                # Scripts Python réutilisables
@@ -29,36 +26,51 @@ Prédire les ventes annuelles de nouveaux restaurants à partir de données dém
 └── .github/workflows/  # CI/CD
 ```
 
+## Prérequis
+
+- Python 3.12
+- [uv](https://docs.astral.sh/uv/) — gestionnaire de paquets
+
+```bash
+# Installer uv si ce n'est pas déjà fait
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+## Installation
+
+```bash
+# Cloner le projet
+git clone <url-du-repo>
+cd restaurant-revenue-mlops
+
+# Créer l'environnement virtuel et installer les dépendances
+uv sync --dev
+
+# Activer l'environnement
+source .venv/bin/activate
+```
+
+## Dataset
+
+Télécharger le dataset depuis Kaggle :
+[Restaurant Revenue Prediction](https://www.kaggle.com/competitions/restaurant-revenue-prediction/data)
+
+Placer les fichiers dans `data/raw/` :
+```
+data/raw/train.csv
+data/raw/test.csv
+```
+
 ## Notebooks
 
 | Notebook | Description |
 |----------|-------------|
-| `resto_revenue_01_analyse.ipynb` | Analyse exploratoire des données |
-| `resto_revenue_02_modelisation.ipynb` | Tests de modèles et sélection du modèle final |
+| `notebooks/resto_revenue_01_analyse.ipynb` | Analyse exploratoire des données |
+| `notebooks/resto_revenue_02_modelisation.ipynb` | Tests de modèles et sélection du modèle final |
 
-## Lancement
-
-### Entraînement
-
+Lancer Jupyter :
 ```bash
-pip install -r requirements.txt
-dvc repro
-```
-
-### API de prédiction
-
-```bash
-uvicorn api.main:app --reload
-# ou
-docker build -t restaurant-revenue-api .
-docker run -p 8000:8000 restaurant-revenue-api
-```
-
-### MLflow UI
-
-```bash
-mlflow ui
-# Accessible sur http://localhost:5000
+jupyter notebook
 ```
 
 ## Métriques
