@@ -1,0 +1,83 @@
+schema: '2.0'
+stages:
+  load_data:
+    cmd: PYTHONPATH=src uv run python src/restaurant_revenue/data/download.py
+    deps:
+    - path: src/restaurant_revenue/data/download.py
+      hash: md5
+      md5: 3a71ecad3a38453cc857eabd0e31908e
+      size: 294
+    - path: src/restaurant_revenue/data/load.py
+      hash: md5
+      md5: 684db47cb98d9fa84ff5f18cb7bab379
+      size: 640
+    outs:
+    - path: data/raw/test.csv
+      hash: md5
+      md5: 9fe5b5c555062da43225b3f1d1e1c053
+      size: 12843982
+    - path: data/raw/train.csv
+      hash: md5
+      md5: a37fc6c1f36c9e84310638c3c398a776
+      size: 18885
+  preprocess:
+    cmd: PYTHONPATH=src uv run python 
+      src/restaurant_revenue/features/preprocessing.py
+    deps:
+    - path: data/raw/test.csv
+      hash: md5
+      md5: 9fe5b5c555062da43225b3f1d1e1c053
+      size: 12843982
+    - path: data/raw/train.csv
+      hash: md5
+      md5: a37fc6c1f36c9e84310638c3c398a776
+      size: 18885
+    - path: src/restaurant_revenue/features/preprocessing.py
+      hash: md5
+      md5: 7f8a57eadfb47ddd6c7a6461978380d1
+      size: 5719
+    outs:
+    - path: data/processed/test_processed.csv
+      hash: md5
+      md5: 312918a91936849e4ebb111d9daba353
+      size: 10771481
+    - path: data/processed/train_processed.csv
+      hash: md5
+      md5: 35df2816547422a6cdc12621e6662306
+      size: 16413
+  train:
+    cmd: PYTHONPATH=src uv run python src/restaurant_revenue/models/train.py
+    deps:
+    - path: data/processed/train_processed.csv
+      hash: md5
+      md5: 35df2816547422a6cdc12621e6662306
+      size: 16413
+    - path: src/restaurant_revenue/models/train.py
+      hash: md5
+      md5: a8758826ddb60182fb97bc1bd9187548
+      size: 2950
+    outs:
+    - path: models/best_model.pkl
+      hash: md5
+      md5: 660c6e2eb0ba0a9267ad5a0ad62b771c
+      size: 489475
+  evaluate:
+    cmd: PYTHONPATH=src uv run python src/restaurant_revenue/models/evaluate.py
+    deps:
+    - path: data/processed/train_processed.csv
+      hash: md5
+      md5: 35df2816547422a6cdc12621e6662306
+      size: 16413
+    - path: models/best_model.pkl
+      hash: md5
+      md5: 660c6e2eb0ba0a9267ad5a0ad62b771c
+      size: 489475
+    - path: src/restaurant_revenue/models/evaluate.py
+      hash: md5
+      md5: ac937686dd0218559966c01d95effd18
+      size: 3216
+    outs:
+    - path: metrics.json
+      hash: md5
+      md5: 439cc32335685ab40e70ca31877e268b
+      size: 96
