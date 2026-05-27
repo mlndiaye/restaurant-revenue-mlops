@@ -18,6 +18,8 @@ data/processed/
 # MLflow
 mlruns/
 mlartifacts/
+mlflow.db
+*.db
 
 # Python
 __pycache__/
@@ -53,7 +55,7 @@ ENV/
 Thumbs.db
 
 # Models (tracked via MLflow or DVC)
-models/
+/models/
 *.pkl
 *.joblib
 *.h5
@@ -70,3 +72,7 @@ logs/
 .env
 .env.*
 description_projet.pdf
+
+# Planning files
+implementation_plan.md
+task.md
