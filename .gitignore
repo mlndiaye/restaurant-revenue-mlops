@@ -72,6 +72,7 @@ logs/
 .env
 .env.*
 description_projet.pdf
+MLOps_Soutenance_NDIAYE.pptx
 
 # Planning files
 implementation_plan.md
