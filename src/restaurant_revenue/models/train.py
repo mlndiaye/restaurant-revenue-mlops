@@ -46,6 +46,13 @@ def train_best_model():
     add_flags = False
     
     print(f"Training {model_name} model...")
+    client = mlflow.tracking.MlflowClient()
+    for exp in client.search_experiments():
+        for run in client.search_runs(experiment_ids=[exp.experiment_id]):
+            if run.info.run_name == f"Final_{model_name}":
+                client.delete_run(run.info.run_id)
+                print(f"  [idempotent] Deleted existing run 'Final_{model_name}' ({run.info.run_id[:8]}...)")
+
     with mlflow.start_run(run_name=f"Final_{model_name}"):
         # Log model metadata and parameters
         mlflow.log_param("model_name", model_name)
@@ -78,7 +85,7 @@ def train_best_model():
         print(f"Model saved locally to {model_path}")
         
         # Log model in MLflow
-        mlflow.sklearn.log_model(pipeline, artifact_path="model")
+        mlflow.sklearn.log_model(pipeline, name="model")
         print("Model run and artifacts successfully tracked in MLflow.")
 
 
