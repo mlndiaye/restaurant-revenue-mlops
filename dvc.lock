@@ -54,8 +54,8 @@ stages:
       size: 16413
     - path: src/restaurant_revenue/models/train.py
       hash: md5
-      md5: a8758826ddb60182fb97bc1bd9187548
-      size: 2950
+      md5: 2bea84ee576fb361ee3e849196409176
+      size: 3325
     outs:
     - path: models/best_model.pkl
       hash: md5
