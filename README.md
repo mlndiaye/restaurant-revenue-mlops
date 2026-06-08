@@ -73,15 +73,17 @@ cd restaurant-revenue-mlops
 uv sync
 ```
 
-### macOS uniquement — LightGBM et XGBoost
+### LightGBM et XGBoost — OpenMP
 
-LightGBM et XGBoost requièrent OpenMP, absent par défaut sur macOS :
+Ces deux librairies s'appuient sur OpenMP pour le parallélisme.
 
-```bash
-brew install libomp
-```
+| OS | Action requise |
+|----|----------------|
+| **macOS** | `brew install libomp` — OpenMP absent du compilateur Apple par défaut |
+| **Linux** | Rien — `libgomp1` inclus avec GCC (géré dans le Dockerfile) |
+| **Windows** | Rien — les wheels embarquent directement les DLLs OpenMP |
 
-Sans ça, l'import de LightGBM lève une erreur au lancement des notebooks.
+Sans `libomp` sur macOS, l'import de LightGBM lève une erreur au démarrage.
 
 ---
 
