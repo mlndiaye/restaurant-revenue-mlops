@@ -3131,8 +3131,6 @@ dependencies = [
     { name = "lightgbm" },
     { name = "matplotlib" },
     { name = "mlflow" },
-    { name = "nbclient" },
-    { name = "nbformat" },
     { name = "numpy" },
     { name = "optuna" },
     { name = "pandas" },
@@ -3147,6 +3145,8 @@ dependencies = [
 [package.dev-dependencies]
 dev = [
     { name = "kagglehub" },
+    { name = "nbclient" },
+    { name = "nbformat" },
 ]
 
 [package.metadata]
@@ -3158,8 +3158,6 @@ requires-dist = [
     { name = "lightgbm", specifier = "==4.6.0" },
     { name = "matplotlib", specifier = "==3.10.3" },
     { name = "mlflow", specifier = "==3.12.0" },
-    { name = "nbclient", specifier = ">=0.11.0" },
-    { name = "nbformat", specifier = ">=5.10.4" },
     { name = "numpy", specifier = "==2.2.6" },
     { name = "optuna", specifier = "==4.6.0" },
     { name = "pandas", specifier = "==2.2.3" },
@@ -3172,7 +3170,11 @@ requires-dist = [
 ]
 
 [package.metadata.requires-dev]
-dev = [{ name = "kagglehub", specifier = "==1.0.1" }]
+dev = [
+    { name = "kagglehub", specifier = "==1.0.1" },
+    { name = "nbclient", specifier = "==0.11.0" },
+    { name = "nbformat", specifier = "==5.10.4" },
+]
 
 [[package]]
 name = "rich"
