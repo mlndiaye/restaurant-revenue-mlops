@@ -18,7 +18,7 @@
 | Serving | FastAPI | API REST avec validation Pydantic |
 | Containerisation | Docker | Runtime portable |
 | CI/CD | GitHub Actions | Tests automatiques sur chaque push |
-| Monitoring | scipy (KS-test, Chi²) | Détection de drift en production |
+| Monitoring | Streamlit + scipy | Dashboard de détection de drift |
 
 ---
 
@@ -35,7 +35,7 @@ Protocole : **Nested Cross-Validation** (5 folds externes × 3 folds internes) +
 | Ridge | 2 586 861 TRY | -0.016 |
 | Lasso | 2 616 176 TRY | -0.039 |
 
-> Le R² faible (~0.045) est attendu : la corrélation maximale entre une feature et le revenu est r=0.19 sur 137 observations avec des features obfusquées.
+> Le R² faible (~0.045) est attendu : corrélation maximale feature↔revenu r=0.19, 137 observations, features obfusquées.
 
 ---
 
@@ -53,6 +53,7 @@ Protocole : **Nested Cross-Validation** (5 folds externes × 3 folds internes) +
 │   │   ├── train.py              # Entraînement du modèle final
 │   │   └── evaluate.py           # Évaluation + métriques DVC
 │   └── utils/drift.py            # Détection de drift
+├── monitoring/dashboard.py       # Dashboard Streamlit
 ├── api/main.py                   # FastAPI — /health + /predict
 ├── tests/test_api.py             # Tests unitaires
 ├── dvc.yaml                      # Pipeline DVC (4 étapes)
@@ -72,6 +73,16 @@ cd restaurant-revenue-mlops
 uv sync
 ```
 
+### macOS uniquement — LightGBM et XGBoost
+
+LightGBM et XGBoost requièrent OpenMP, absent par défaut sur macOS :
+
+```bash
+brew install libomp
+```
+
+Sans ça, l'import de LightGBM lève une erreur au lancement des notebooks.
+
 ---
 
 ## Dataset
@@ -87,6 +98,28 @@ data/raw/test.csv
 
 ---
 
+## Notebooks
+
+Les notebooks utilisent le kernel du virtualenv `.venv` créé par `uv sync`.
+
+### VS Code (recommandé)
+
+1. Ouvrir le dossier dans VS Code
+2. Installer l'extension **Jupyter** si ce n'est pas déjà fait
+3. Ouvrir `notebooks/01_eda.ipynb` ou `notebooks/02_modelisation.ipynb`
+4. En haut à droite, cliquer sur **"Select Kernel"** → **"Python Environments"** → choisir `.venv`
+5. Exécuter les cellules normalement
+
+### JupyterLab (terminal)
+
+```bash
+uv run jupyter lab
+```
+
+Ouvre JupyterLab dans le navigateur. Le kernel `.venv` est automatiquement disponible.
+
+---
+
 ## Reproduire le pipeline complet
 
 ```bash
@@ -94,20 +127,15 @@ data/raw/test.csv
 PYTHONPATH=src uv run dvc repro
 ```
 
-Étapes du pipeline (`dvc dag`) :
+Étapes du pipeline :
 ```
 load_data → preprocess → train → evaluate
 ```
 
 ---
 
-## Lancer les expériences (notebook)
+## Visualiser les expériences MLflow
 
-```bash
-uv run jupyter notebook notebooks/02_modelisation.ipynb
-```
-
-Visualiser les résultats dans MLflow :
 ```bash
 uv run mlflow ui --backend-store-uri sqlite:///mlflow.db
 # → http://localhost:5000
@@ -127,21 +155,27 @@ Exemple de requête :
 curl -X POST http://localhost:8000/predict \
   -H "Content-Type: application/json" \
   -d '{
-    "Open Date": "01/01/2010",
-    "City": "Istanbul",
-    "City Group": "Big Cities",
-    "Type": "FC",
-    "P1": 5, "P2": 3, "P3": 2, "P4": 1, "P5": 0,
-    "P6": 4, "P7": 2, "P8": 1, "P9": 0, "P10": 3,
-    "P11": 1, "P12": 0, "P13": 2, "P14": 0, "P15": 0,
-    "P16": 0, "P17": 0, "P18": 0, "P19": 1, "P20": 2,
-    "P21": 0, "P22": 1, "P23": 0, "P24": 0, "P25": 0,
-    "P26": 0, "P27": 0, "P28": 3, "P29": 1, "P30": 0,
-    "P31": 0, "P32": 0, "P33": 0, "P34": 0, "P35": 0,
-    "P36": 0, "P37": 0
+    "Open Date": "01/01/2010", "City": "Istanbul",
+    "City Group": "Big Cities", "Type": "FC",
+    "P1":5,"P2":3,"P3":2,"P4":1,"P5":0,"P6":4,"P7":2,"P8":1,"P9":0,"P10":3,
+    "P11":1,"P12":0,"P13":2,"P14":0,"P15":0,"P16":0,"P17":0,"P18":0,"P19":1,"P20":2,
+    "P21":0,"P22":1,"P23":0,"P24":0,"P25":0,"P26":0,"P27":0,"P28":3,"P29":1,"P30":0,
+    "P31":0,"P32":0,"P33":0,"P34":0,"P35":0,"P36":0,"P37":0
   }'
 # → {"prediction": 4690480.8}
 ```
+
+---
+
+## Dashboard de monitoring
+
+```bash
+PYTHONPATH=src uv run streamlit run monitoring/dashboard.py
+# → http://localhost:8501
+```
+
+Compare la distribution des données de production aux données d'entraînement.
+Détecte le drift via KS-test (numérique) et Chi² (catégoriel). Alerte si >10% des features dérivent.
 
 ---
 
@@ -151,16 +185,6 @@ curl -X POST http://localhost:8000/predict \
 docker build -t restaurant-revenue .
 docker run -p 8000:8000 restaurant-revenue
 ```
-
----
-
-## Détection de drift
-
-```bash
-PYTHONPATH=src uv run python src/restaurant_revenue/utils/drift.py
-```
-
-Compare la distribution train vs données de production via KS-test (numérique) et Chi² (catégoriel). Alerte si >10% des features dérivent.
 
 ---
 
