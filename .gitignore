@@ -1,4 +1,4 @@
-docs/superpowers/
+docs/
 .claude/
 *.claude
 .superpowers/
@@ -78,3 +78,5 @@ task.md
 
 # Notes personnelles
 COMPRENDRE_LE_PROJET.md
+mlOps_project_presentation.pptx
+MLOps_Soutenance_NDIAYE.key
