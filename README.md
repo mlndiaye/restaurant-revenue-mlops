@@ -5,6 +5,8 @@
 
 **Contexte** : TFI ouvre ~1 200 restaurants à travers l'Europe et l'Asie. Un mauvais emplacement entraîne une fermeture dans les 18 mois. L'objectif est de prédire le revenu annuel d'un site avant son ouverture pour guider les décisions d'investissement.
 
+**API en production** : [https://restaurant-revenue-api-production.up.railway.app/docs](https://restaurant-revenue-api-production.up.railway.app/docs)
+
 ---
 
 ## Stack technique
@@ -18,6 +20,7 @@
 | Serving | FastAPI | API REST avec validation Pydantic |
 | Containerisation | Docker | Runtime portable |
 | CI/CD | GitHub Actions | Tests automatiques sur chaque push |
+| Déploiement | Railway | API en production via Docker Hub |
 | Monitoring | Streamlit + scipy | Dashboard de détection de drift |
 
 ---
@@ -147,6 +150,9 @@ uv run mlflow ui --backend-store-uri sqlite:///mlflow.db
 
 ## API de prédiction
 
+**Production** : [https://restaurant-revenue-api-production.up.railway.app/docs](https://restaurant-revenue-api-production.up.railway.app/docs)
+
+**Local** :
 ```bash
 PYTHONPATH=src uv run uvicorn api.main:app --reload
 # → http://localhost:8000/docs  (Swagger UI)
@@ -181,11 +187,31 @@ Détecte le drift via KS-test (numérique) et Chi² (catégoriel). Alerte si >10
 
 ---
 
+## CI/CD
+
+Chaque push sur `main` déclenche automatiquement :
+
+```
+1. Tests        → pytest (preprocessing + train + tests unitaires)
+2. Docker Build → build de l'image + push sur Docker Hub (mlndiaye/restaurant-revenue-mlops:latest)
+3. Deploy       → redéploiement automatique sur Railway
+```
+
+Les jobs 2 et 3 ne s'exécutent que sur `main` (pas sur les pull requests).
+
+---
+
 ## Docker
 
 ```bash
 docker build -t restaurant-revenue .
 docker run -p 8000:8000 restaurant-revenue
+```
+
+Ou depuis Docker Hub :
+```bash
+docker pull mlndiaye/restaurant-revenue-mlops:latest
+docker run -p 8000:8000 mlndiaye/restaurant-revenue-mlops:latest
 ```
 
 ---
